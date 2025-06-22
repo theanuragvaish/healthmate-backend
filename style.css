@@ -1,0 +1,74 @@
+html, body {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f8fa;
+  text-align: center;
+}
+
+#avatarVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 0;
+}
+
+#micContainer {
+  position: absolute;
+  bottom: 30%; /* Adjusted position */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  margin-bottom: 20px; /* Increase gap */
+}
+
+#micButton {
+  background-color: rgba(0, 0, 0, 0.4);
+  border: none;
+  padding: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#micButton:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+#micButton svg {
+  width: 28px;
+  height: 28px;
+  fill: white;
+}
+
+#transcriptBox {
+  position: absolute;
+  bottom: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  max-width: 90%;
+  max-height: 20vh;
+  overflow-y: scroll;
+  display: none;
+  line-height: 1.4;
+  font-size: 13px;
+  z-index: 2;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+
+#transcriptBox::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}

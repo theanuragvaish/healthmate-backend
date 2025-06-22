@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Wellness Avatar</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: black;
+    }
+
+    #avatarVideo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(1.1) contrast(1.05) saturate(1.1);
+      animation: subtleGlow 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes subtleGlow {
+      0% { 
+        filter: brightness(1.1) contrast(1.05) saturate(1.1) hue-rotate(0deg);
+      }
+      50% { 
+        filter: brightness(1.15) contrast(1.1) saturate(1.15) hue-rotate(2deg);
+      }
+      100% { 
+        filter: brightness(1.1) contrast(1.05) saturate(1.1) hue-rotate(0deg);
+      }
+    }
+
+    #overlayUI {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 5vh; /* Pushes buttons to 25% from bottom */
+      box-sizing: border-box;
+      z-index: 2;
+    }
+
+    #micButton {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      padding: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    #micButton:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    #micButton svg {
+      width: 32px;
+      height: 32px;
+      color: white;
+      stroke-width: 1.5;
+    }
+
+    #transcriptBox {
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 16px;
+      max-width: 90%;
+      max-height: 20vh;
+      overflow-y: auto;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      position: relative;
+      display: none;
+    }
+
+    #transcriptToggle {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      padding: 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    #transcriptToggle:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    #transcriptToggle svg {
+      width: 24px;
+      height: 24px;
+      color: white;
+      stroke-width: 1.5;
+    }
+
+    #backgroundMusic {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <video id="avatarVideo" autoplay muted loop playsinline>
+    <source src="cortana-loop.webm" type="video/webm">
+    <source src="cortana-loop.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <audio id="backgroundMusic" loop>
+    <source src="https://www.soundjay.com/misc/sounds/meditation-bell-005.mp3" type="audio/mpeg">
+    <source src="https://www2.cs.uic.edu/~i101/SoundFiles/taunt.wav" type="audio/wav">
+  </audio>
+
+  <div id="overlayUI">
+    <button id="micButton" onclick="startListening()" aria-label="Talk">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="8" y1="23" x2="16" y2="23"/>
+      </svg>
+    </button>
+    <button id="transcriptToggle" onclick="toggleTranscript()" aria-label="Toggle Transcript">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+    </button>
+    <div id="transcriptBox" class="collapsed"></div>
+  </div>
+  <script src="script.js"></script>
+  <script>
+    function toggleTranscript() {
+      var transcriptBox = document.getElementById('transcriptBox');
+      if (transcriptBox.style.display === 'none') {
+        transcriptBox.style.display = 'block';
+      } else {
+        transcriptBox.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

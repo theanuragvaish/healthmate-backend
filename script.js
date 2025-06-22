@@ -118,7 +118,7 @@ function startListening() {
 
 async function getGPTReply(userInput) {
   try {
-    const response = await fetch("https://healthmate.tgeanuragvaish.repl.co/api/ask", {
+    const response = await fetch("https://healthmate-backend-9bhw.onrender.com/api/ask", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

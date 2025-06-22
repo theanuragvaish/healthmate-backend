@@ -1,6 +1,5 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const fetch = require('node-fetch');
 const path = require('path');
 
 dotenv.config();
@@ -19,7 +18,7 @@ app.post('/api/ask', async (req, res) => {
   const userInput = req.body.userInput;
 
   try {
-    const response = await fetch('https://healthmate.tgeanuragvaish.repl.co/api/ask', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -43,6 +42,11 @@ app.post('/api/ask', async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

@@ -3,7 +3,7 @@ let isListening = false;
 let transcriptBox;
 let backgroundMusic;
 let transcriptVisible = false;
-
+let uploadedFileContent = ""; // global variable to store file text
 // Wait for DOM to load
 document.addEventListener('DOMContentLoaded', function() {
   transcriptBox = document.getElementById("transcriptBox");
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  let uploadedFileContent = ""; // global variable to store file text
+  
 
 document.getElementById("fileUpload").addEventListener("change", () => {
   const file = document.getElementById("fileUpload").files[0];
@@ -112,32 +112,33 @@ function startListening() {
     }
   };
 
-  recognition.onresult = async (event) => {
-    const userInput = event.results?.[0]?.[0]?.transcript;
-    if (!userInput) return;
+recognition.onresult = async (event) => {
+  const userInput = event.results?.[0]?.[0]?.transcript?.trim();
+  if (!userInput) return;
 
+  if (transcriptBox && transcriptVisible) {
+    transcriptBox.innerHTML = transcriptBox.innerHTML.replace(`<i>🎤 Listening...</i><br>`, '');
+    transcriptBox.innerHTML += `<b>You:</b> ${userInput}<br><i>💭 Thinking...</i><br>`;
+    transcriptBox.scrollTo({ top: transcriptBox.scrollHeight, behavior: 'smooth' });
+  }
+
+  try {
+    const reply = await getGPTReply(userInput, uploadedFileContent || ""); // ✅ fix
     if (transcriptBox && transcriptVisible) {
-      transcriptBox.innerHTML = transcriptBox.innerHTML.replace(`<i>🎤 Listening...</i><br>`, '');
-      transcriptBox.innerHTML += `<b>You:</b> ${userInput}<br><i>💭 Thinking...</i><br>`;
+      transcriptBox.innerHTML = transcriptBox.innerHTML.replace(`<i>💭 Thinking...</i><br>`, '');
+      transcriptBox.innerHTML += `<b>Coach:</b> ${reply}<br><br>`;
       transcriptBox.scrollTo({ top: transcriptBox.scrollHeight, behavior: 'smooth' });
     }
-
-    try {
-      const reply = await getGPTReply(userInput, uploadedFileContent);
-      if (transcriptBox && transcriptVisible) {
-        transcriptBox.innerHTML = transcriptBox.innerHTML.replace(`<i>💭 Thinking...</i><br>`, '');
-        transcriptBox.innerHTML += `<b>Coach:</b> ${reply}<br><br>`;
-        transcriptBox.scrollTo({ top: transcriptBox.scrollHeight, behavior: 'smooth' });
-      }
-      speak(reply);
-    } catch (error) {
-      console.error("Error processing speech:", error);
-      if (transcriptBox && transcriptVisible) {
-        transcriptBox.innerHTML = transcriptBox.innerHTML.replace(`<i>💭 Thinking...</i><br>`, '');
-        transcriptBox.innerHTML += `<b>Coach:</b> Sorry, I had trouble processing that. Please try again.<br><br>`;
-      }
+    speak(reply);
+  } catch (error) {
+    console.error("Error processing speech:", error);
+    if (transcriptBox && transcriptVisible) {
+      transcriptBox.innerHTML = transcriptBox.innerHTML.replace(`<i>💭 Thinking...</i><br>`, '');
+      transcriptBox.innerHTML += `<b>Coach:</b> Sorry, I had trouble processing that. Please try again.<br><br>`;
     }
-  };
+  }
+};
+
 
   recognition.onerror = (event) => {
     console.error("Recognition error:", event.error);

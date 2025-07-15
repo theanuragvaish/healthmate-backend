@@ -166,7 +166,18 @@
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
     </button>
-    <div id="transcriptBox" class="collapsed"></div>
+   <div id="transcriptBox" class="collapsed">
+  <div id="transcriptContent"></div>
+
+  <div id="chatInputRow">
+    <label for="fileUpload" id="uploadIcon" title="Upload file">📎</label>
+    <input type="file" id="fileUpload" accept=".pdf,.png,.jpg,.jpeg,.txt,.doc,.docx" hidden />
+
+    <input type="text" id="chatInput" placeholder="Type your message..." />
+    <button id="sendButton">➤</button>
+  </div>
+</div>
+
   </div>
   <script src="script.js"></script>
   <script>

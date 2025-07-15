@@ -13,7 +13,41 @@ document.addEventListener('DOMContentLoaded', function() {
     backgroundMusic.volume = 0.3;
     backgroundMusic.play().catch(e => console.log("Autoplay prevented:", e));
   }
+
+  // 👇 Add these lines below
+  document.getElementById("sendButton").addEventListener("click", async () => {
+    const input = document.getElementById("chatInput");
+    const userInput = input.value.trim();
+    if (!userInput) return;
+
+    appendToTranscript(`<b>You:</b> ${userInput}<br><i>💭 Thinking...</i><br>`);
+    input.value = "";
+
+    try {
+      const reply = await getGPTReply(userInput);
+      appendToTranscript(`<b>Coach:</b> ${reply}<br><br>`);
+      speak(reply);
+    } catch (err) {
+      console.error(err);
+      appendToTranscript(`<b>Coach:</b> Sorry, something went wrong.<br><br>`);
+    }
+  });
+
+  document.getElementById("fileUpload").addEventListener("change", () => {
+    const file = document.getElementById("fileUpload").files[0];
+    if (file) {
+      appendToTranscript(`<i>📎 Uploaded file:</i> ${file.name}<br>`);
+    }
+  });
 });
+
+function appendToTranscript(html) {
+  const box = document.getElementById("transcriptContent");
+  if (box) {
+    box.innerHTML += html;
+    box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+  }
+}
 
 function toggleTranscript() {
   if (!transcriptBox) {

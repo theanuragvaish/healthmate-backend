@@ -68,6 +68,9 @@ html, body {
 #transcriptBox {
   position: fixed;
   bottom: 18%;
+  text-align: center;     /* ✅ Center-aligns the content */
+  justify-content: center; /* ✅ If using flexbox children */
+  align-items: center;
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
@@ -88,6 +91,7 @@ html, body {
 
 #chatInputRow {
   display: flex;
+  justify-content: center;   /* ✅ Center the whole row */
   align-items: center;
   gap: 12px;
   margin-top: 12px;

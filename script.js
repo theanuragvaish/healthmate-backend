@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     input.value = "";
 
     try {
-      const reply = await getGPTReply(userInput);
+      const reply = await getGPTReply(userInput, uploadedFileContent);
       appendToTranscript(`<b>Coach:</b> ${reply}<br><br>`);
       speak(reply);
     } catch (err) {
@@ -33,12 +33,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  document.getElementById("fileUpload").addEventListener("change", () => {
-    const file = document.getElementById("fileUpload").files[0];
-    if (file) {
-      appendToTranscript(`<i>📎 Uploaded file:</i> ${file.name}<br>`);
-    }
-  });
+  let uploadedFileContent = ""; // global variable to store file text
+
+document.getElementById("fileUpload").addEventListener("change", () => {
+  const file = document.getElementById("fileUpload").files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    uploadedFileContent = event.target.result;
+
+    appendToTranscript(`<i>📎 Uploaded file:</i> ${file.name}<br>`);
+    appendToTranscript(`<i>🧠 File ready for reference in your next message.</i><br>`);
+  };
+
+  if (file.type === "application/pdf") {
+    appendToTranscript(`<i>⚠️ PDF text extraction requires backend support.</i><br>`);
+    // Optional: fallback warning
+  } else {
+    reader.readAsText(file);
+  }
+});
+
 });
 
 function appendToTranscript(html) {
@@ -106,7 +123,7 @@ function startListening() {
     }
 
     try {
-      const reply = await getGPTReply(userInput);
+      const reply = await getGPTReply(userInput, uploadedFileContent);
       if (transcriptBox && transcriptVisible) {
         transcriptBox.innerHTML = transcriptBox.innerHTML.replace(`<i>💭 Thinking...</i><br>`, '');
         transcriptBox.innerHTML += `<b>Coach:</b> ${reply}<br><br>`;
@@ -150,14 +167,17 @@ function startListening() {
   }
 }
 
-async function getGPTReply(userInput) {
+async function getGPTReply(userInput, fileText = "") {
   try {
     const response = await fetch("https://healthmate-backend-9bhw.onrender.com/api/ask", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ userInput })
+      body: JSON.stringify({
+        userInput,
+        fileText
+      })
     });
 
     if (!response.ok) {
@@ -178,6 +198,7 @@ async function getGPTReply(userInput) {
     return "I'm having trouble connecting right now. Please try again later.";
   }
 }
+
 
 function speak(text) {
   if ('speechSynthesis' in window) {
